@@ -653,6 +653,19 @@ private var waveshareBoostBinding: Binding<Bool> {
         }
     )
 }
+
+// Config byte 9. Face masks render matrix rain instead of plasma.
+ private var matrixRainInsteadOfPlasmaBinding: Binding<Bool> {
+    Binding(
+        get: { bleModel.matrixRainInsteadOfPlasma },
+        set: { newValue in
+            var configuration = bleModel.currentConfiguration()
+            configuration.matrixRainInsteadOfPlasma = newValue
+            bleModel.applyUserConfiguration(configuration)
+        }
+    )
+}
+
     private var accelerometerBinding: Binding<Bool> {
         Binding(
             get: { bleModel.accelerometerEnabled },
@@ -736,6 +749,11 @@ private var waveshareBoostBinding: Binding<Bool> {
 
             Toggle(isOn: waveshareBoostBinding) {
                 Label("Waveshare brightness boost", systemImage: "sun.max.trianglebadge.exclamationmark")
+            }
+            .disabled(!bleModel.isConnected)
+
+            Toggle(isOn: matrixRainInsteadOfPlasmaBinding) {
+                Label("Matrix rain instead of plasma", systemImage: "character.textbox")
             }
             .disabled(!bleModel.isConnected)
 

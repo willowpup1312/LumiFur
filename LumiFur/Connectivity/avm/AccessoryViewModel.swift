@@ -241,6 +241,7 @@ final class AccessoryViewModel: ObservableObject {
     @Published var autoBrightnessFloor: UInt8 = 15    // separate characteristic, not a config byte
     @Published var accelerometerEnabled = true
     @Published var sleepModeEnabled = true
+    @Published var matrixRainInsteadOfPlasma = false // config byte 9
     @Published var auroraModeEnabled = true
     @Published var customMessage = ""
     @Published var firmwareVersion = "N/A"
@@ -518,6 +519,7 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(accelerometerEnabled, forKey: "accelerometer")
         defaults.set(sleepModeEnabled, forKey: "sleepMode")
         defaults.set(auroraModeEnabled, forKey: "auroraMode")
+        defaults.set(matrixRainInsteadOfPlasma, forKey: "matrixRainInsteadOfPlasma")
         defaults.removeObject(forKey: "arouraMode")
         defaults.set(customMessage, forKey: "customMessageText")
         defaults.set(!customMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, forKey: "customMessageEnabled")
@@ -553,6 +555,12 @@ final class AccessoryViewModel: ObservableObject {
             "waveshareBrightnessBoost", 
             current: &waveshareBrightnessBoost, 
             newValue: configuration.waveshareBrightnessBoost
+        )
+
+        let didChangeMatrixRainInsteadOfPlasma = assignIfChanged(
+            "matrixRainInsteadOfPlasma",
+            current: &matrixRainInsteadOfPlasma,
+            newValue: configuration.matrixRainInsteadOfPlasma
         )
         let didChangeAccelerometer = assignIfChanged(
             "accelerometerEnabled",
@@ -725,7 +733,8 @@ final class AccessoryViewModel: ObservableObject {
             mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled,
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
-            waveshareBrightnessBoost: waveshareBrightnessBoost
+            waveshareBrightnessBoost: waveshareBrightnessBoost,
+            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma
         )
     }
 
@@ -1383,7 +1392,8 @@ final class AccessoryViewModel: ObservableObject {
             mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled,
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
-            waveshareBrightnessBoost: waveshareBrightnessBoost
+            waveshareBrightnessBoost: waveshareBrightnessBoost,
+            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma
         )
     }
 

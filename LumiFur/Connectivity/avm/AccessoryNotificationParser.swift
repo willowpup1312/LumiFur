@@ -44,7 +44,8 @@ enum AccessoryNotificationParser {
         mouthBrightnessOverrideEnabled: data.count > 5 && data[5] == 1,
         disableBleIndicatorLight: data.count > 6 && data[6] == 1,
         disableBleStatusIcon: data.count > 7 && data[7] == 1,
-        waveshareBrightnessBoost: data.count > 8 && data[8] == 1
+        waveshareBrightnessBoost: data.count > 8 && data[8] == 1,
+        matrixRainInsteadOfPlasma: data.count > 9 && data[9] == 1
     )
 }
 
