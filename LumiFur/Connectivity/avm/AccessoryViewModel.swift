@@ -711,7 +711,10 @@ final class AccessoryViewModel: ObservableObject {
         mouthBrightnessOverrideEnabled: Bool,
         accelerometerEnabled: Bool,
         sleepModeEnabled: Bool,
-        auroraModeEnabled: Bool
+        auroraModeEnabled: Bool,
+        disableBleIndicatorLight: Bool,   // byte 6
+        disableBleStatusIcon: Bool,       // byte 7
+        waveshareBrightnessBoost: Bool    // byte 8
     ) -> Data {
         AccessoryCommandEncoder.accessorySettingsPayload(
             autoBrightness: autoBrightness,
@@ -719,7 +722,10 @@ final class AccessoryViewModel: ObservableObject {
             sleepModeEnabled: sleepModeEnabled,
             auroraModeEnabled: auroraModeEnabled,
             staticColorEnabled: staticColorEnabled,
-            mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled
+            mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled,
+            disableBleIndicatorLight: disableBleIndicatorLight,
+            disableBleStatusIcon: disableBleStatusIcon,
+            waveshareBrightnessBoost: waveshareBrightnessBoost
         )
     }
 
