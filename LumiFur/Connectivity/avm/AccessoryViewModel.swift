@@ -242,6 +242,7 @@ final class AccessoryViewModel: ObservableObject {
     @Published var accelerometerEnabled = true
     @Published var sleepModeEnabled = true
     @Published var matrixRainInsteadOfPlasma = false // config byte 9
+    @Published var boopMode: UInt8 = 0 // config byte 10
     @Published var auroraModeEnabled = true
     @Published var customMessage = ""
     @Published var firmwareVersion = "N/A"
@@ -488,6 +489,10 @@ final class AccessoryViewModel: ObservableObject {
             autoBrightnessFloor = UInt8(clamping: floor)
         }
 
+        if let storedBoop = defaults.object(forKey: "boopMode") as? Int {
+            boopMode = UInt8(clamping: storedBoop)
+        }
+
         if let storedMessage = defaults.object(forKey: "customMessageText") as? String {
             customMessage = storedMessage
         }
@@ -544,6 +549,7 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(sleepModeEnabled, forKey: "sleepMode")
         defaults.set(auroraModeEnabled, forKey: "auroraMode")
         defaults.set(matrixRainInsteadOfPlasma, forKey: "matrixRainInsteadOfPlasma")
+        defaults.set(boopMode, forKey: "boopMode")
         defaults.removeObject(forKey: "arouraMode")
         defaults.set(customMessage, forKey: "customMessageText")
         defaults.set(!customMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, forKey: "customMessageEnabled")
@@ -586,6 +592,13 @@ final class AccessoryViewModel: ObservableObject {
             current: &matrixRainInsteadOfPlasma,
             newValue: configuration.matrixRainInsteadOfPlasma
         )
+
+        let didChangeBoopMode = assignIfChanged(
+            "boopMode",
+            current: &boopMode,
+            newValue: configuration.boopMode
+        )
+
         let didChangeAccelerometer = assignIfChanged(
             "accelerometerEnabled",
             current: &accelerometerEnabled,
@@ -1421,7 +1434,8 @@ final class AccessoryViewModel: ObservableObject {
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
             waveshareBrightnessBoost: waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma
+            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma,
+            boopMode: boopMode
         )
     }
 

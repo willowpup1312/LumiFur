@@ -757,6 +757,21 @@ private var waveshareBoostBinding: Binding<Bool> {
             }
             .disabled(!bleModel.isConnected)
 
+            Picker("Boop behavior", selection: Binding(
+                get: { bleModel.boopMode },
+                set: { newValue in
+                    var configuration = bleModel.currentConfiguration()
+                    configuration.boopMode = newValue // byte 10
+                    bleModel.applyUserConfiguration(configuration)
+                }
+            )) {
+                Text("Default").tag(UInt8(0))
+                Text("Advanced boop 1").tag(UInt8(1))
+                Text("Advanced boop 2").tag(UInt8(2))
+                Text("Advanced boop 4").tag(UInt8(3))
+            }
+            .disabled(!bleModel.isConnected)
+
             Text("Brightness boost reboots the controller.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)

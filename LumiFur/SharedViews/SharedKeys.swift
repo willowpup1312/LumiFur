@@ -51,7 +51,8 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
     var disableBleIndicatorLight: Bool    // byte 6, NeoPixel off
     var disableBleStatusIcon: Bool      // byte 7, panel icon off
     var waveshareBrightnessBoost: Bool   // byte 8, controller reboots
-    var matrixRainInsteadOfPlasma: Bool = false   // byte 9, face masks use matrix rain
+    var matrixRainInsteadOfPlasma: Bool // byte 9, face masks use matrix rain
+    var boopMode: UInt8 // config byte 10
 
     init(
         autoBrightness: Bool,
@@ -60,10 +61,11 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
         auroraModeEnabled: Bool,
         staticColorEnabled: Bool,
         mouthBrightnessOverrideEnabled: Bool,
-        disableBleIndicatorLight: Bool = false,
-        disableBleStatusIcon: Bool = false,
-        waveshareBrightnessBoost: Bool = false,
-        matrixRainInsteadOfPlasma: Bool = false
+        disableBleIndicatorLight: Bool,
+        disableBleStatusIcon: Bool,
+        waveshareBrightnessBoost: Bool,
+        matrixRainInsteadOfPlasma: Bool,
+        boopMode: UInt8
     ) {
         self.autoBrightness = autoBrightness
         self.accelerometerEnabled = accelerometerEnabled
@@ -75,6 +77,7 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
         self.disableBleStatusIcon = disableBleStatusIcon
         self.waveshareBrightnessBoost = waveshareBrightnessBoost
         self.matrixRainInsteadOfPlasma = matrixRainInsteadOfPlasma
+        self.boopMode = boopMode
     }
 }
 
