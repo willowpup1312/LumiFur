@@ -235,6 +235,10 @@ final class AccessoryViewModel: ObservableObject {
     @Published var autoBrightness = true
     @Published var staticColorEnabled = false
     @Published var mouthBrightnessOverrideEnabled = true
+    @Published var disableBleIndicatorLight = false   // byte 6
+    @Published var disableBleStatusIcon = false       // byte 7
+    @Published var waveshareBrightnessBoost = false   // byte 8
+    @Published var autoBrightnessFloor: UInt8 = 15    // separate characteristic, not a config byte
     @Published var accelerometerEnabled = true
     @Published var sleepModeEnabled = true
     @Published var auroraModeEnabled = true
@@ -507,6 +511,10 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(autoBrightness, forKey: "autoBrightness")
         defaults.set(staticColorEnabled, forKey: "staticColor")
         defaults.set(mouthBrightnessOverrideEnabled, forKey: "mouthBrightnessOverride")
+        defaults.set(disableBleIndicatorLight, forKey: "disableBleIndicatorLight")
+        defaults.set(disableBleStatusIcon, forKey: "disableBleStatusIcon")
+        defaults.set(waveshareBrightnessBoost, forKey: "waveshareBrightnessBoost")
+        defaults.set(autoBrightnessFloor, forKey: "autoBrightnessFloor")
         defaults.set(accelerometerEnabled, forKey: "accelerometer")
         defaults.set(sleepModeEnabled, forKey: "sleepMode")
         defaults.set(auroraModeEnabled, forKey: "auroraMode")
@@ -530,6 +538,21 @@ final class AccessoryViewModel: ObservableObject {
             "mouthBrightnessOverrideEnabled",
             current: &mouthBrightnessOverrideEnabled,
             newValue: configuration.mouthBrightnessOverrideEnabled
+        )
+        let didChangeDisableBleIndicatorLight = assignIfChanged(
+            "disableBleIndicatorLight", 
+            current: &disableBleIndicatorLight, 
+            newValue: configuration.disableBleIndicatorLight
+        )
+        let didChangeDisableBleStatusIcon = assignIfChanged(
+            "disableBleStatusIcon", 
+            current: &disableBleStatusIcon, 
+            newValue: configuration.disableBleStatusIcon
+        )
+        let didChangeWaveshareBrightnessBoost = assignIfChanged(
+            "waveshareBrightnessBoost", 
+            current: &waveshareBrightnessBoost, 
+            newValue: configuration.waveshareBrightnessBoost
         )
         let didChangeAccelerometer = assignIfChanged(
             "accelerometerEnabled",
@@ -859,6 +882,12 @@ final class AccessoryViewModel: ObservableObject {
         client.writeBrightness(value)
     }
 
+    /// Writes the auto-brightness floor. Firmware treats anything below 15 as 15.
+    func setAutoBrightnessFloor(_ value: UInt8) {
+        autoBrightnessFloor = value
+        defaults.set(value, forKey: "autoBrightnessFloor")
+        client.writeAutoBrightnessFloor(value)
+    }
     
     func setStrobeSettings(enabled: Bool, color: Color, cycleMs: UInt16) {
         guard client.canWriteStrobeSettings() else {

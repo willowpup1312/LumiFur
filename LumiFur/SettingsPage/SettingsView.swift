@@ -621,6 +621,38 @@ private struct ConfigSection: View {
             }
         )
     }
+    private var disableBleIndicatorBinding: Binding<Bool> {
+    Binding(
+        get: { bleModel.disableBleIndicatorLight },
+        set: { newValue in
+            var configuration = bleModel.currentConfiguration()
+            configuration.disableBleIndicatorLight = newValue // byte 6
+            bleModel.applyUserConfiguration(configuration)
+        }
+    )
+}
+
+private var disableBleStatusIconBinding: Binding<Bool> {
+    Binding(
+        get: { bleModel.disableBleStatusIcon },
+        set: { newValue in
+            var configuration = bleModel.currentConfiguration()
+            configuration.disableBleStatusIcon = newValue // byte 7
+            bleModel.applyUserConfiguration(configuration)
+        }
+    )
+}
+
+private var waveshareBoostBinding: Binding<Bool> {
+    Binding(
+        get: { bleModel.waveshareBrightnessBoost },
+        set: { newValue in
+            var configuration = bleModel.currentConfiguration()
+            configuration.waveshareBrightnessBoost = newValue // byte 8, controller reboots
+            bleModel.applyUserConfiguration(configuration)
+        }
+    )
+}
     private var accelerometerBinding: Binding<Bool> {
         Binding(
             get: { bleModel.accelerometerEnabled },
@@ -650,6 +682,8 @@ private struct ConfigSection: View {
             }
         )
     }
+
+    
     
     var body: some View {
         Section(
@@ -689,9 +723,28 @@ private struct ConfigSection: View {
                 )
             )
             .disabled(!bleModel.isConnected)
-        }
-    }
-}
+
+            Toggle(isOn: disableBleIndicatorBinding) {
+                Label("Disable BLE indicator light", systemImage: "lightbulb.slash")
+         }
+            .disabled(!bleModel.isConnected)
+
+            Toggle(isOn: disableBleStatusIconBinding) {
+                Label("Hide BLE status icon", systemImage: "eye.slash")
+            }
+            .disabled(!bleModel.isConnected)
+
+            Toggle(isOn: waveshareBoostBinding) {
+                Label("Waveshare brightness boost", systemImage: "sun.max.trianglebadge.exclamationmark")
+            }
+            .disabled(!bleModel.isConnected)
+
+            Text("Brightness boost reboots the controller.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                    }
+                }
+            }
 
 private struct BrightnessControls: View {
     @ObservedObject var bleModel: AccessoryViewModel
@@ -727,6 +780,22 @@ private struct BrightnessControls: View {
             } else {
                 Toggle(isOn: $mouthBrightnessOverride) {
                     Label("Maw Brightness Override", systemImage: "eye.fill")
+                }
+                .disabled(!bleModel.isConnected)
+                // Not a config byte. Writes the floor characteristic. Minimum on device is 15.
+                Slider(
+                    value: Binding(
+                        get: { Double(bleModel.autoBrightnessFloor) },
+                        set: { bleModel.setAutoBrightnessFloor(UInt8($0)) }
+                    ),
+                    in: 15...255,
+                    step: 5
+                ) {
+                    Text("Auto brightness floor")
+                } minimumValueLabel: {
+                    Image(systemName: "sun.min")
+                } maximumValueLabel: {
+                    Image(systemName: "sun.max")
                 }
                 .disabled(!bleModel.isConnected)
             }

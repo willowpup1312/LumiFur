@@ -180,6 +180,10 @@ final class BLEClient: NSObject, @unchecked Sendable {
         write(Data([value]), to: .brightness, type: .withResponse)
     }
 
+    func writeAutoBrightnessFloor(_ value: UInt8) {
+        write(Data([value]), to: .autoBrightnessFloor, type: .withResponse)
+    }
+
     func writeScrollText(_ text: String) {
         write(AccessoryCommandEncoder.scrollText(text), to: .scrollText, preferredWriteTypeForCharacteristic: true)
     }
@@ -813,6 +817,8 @@ private enum BLEIdentifiers {
     static let command = CBUUID(string: "0195eec3-06d2-7fd4-a561-49493be3ee41")
     static let temperatureLogs = CBUUID(string: "0195eec2-ae6e-74a1-bcd5-215e2365477c")
     static let brightness = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09ef")
+    /// One-byte auto-brightness floor. Not part of the config characteristic.
+    static let autoBrightnessFloor = CBUUID(string: "BEB5483E-36E1-4688-B7F5-EA07361B26A9")
     static let deviceInfo = CBUUID(string: "cba1d466-344c-4be3-ab3f-189f80dd7599")
     static let ota = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09ee")
     static let lux = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09f0")
