@@ -385,6 +385,10 @@ final class BLEClient: NSObject, @unchecked Sendable {
             peripheral.setNotifyValue(true, for: characteristic)
             peripheral.readValue(for: characteristic)
 
+        case BLEIdentifiers.autoBrightnessFloor:
+            characteristics[.autoBrightnessFloor] = characteristic
+            peripheral.readValue(for: characteristic)
+
         case BLEIdentifiers.ota:
             characteristics[.ota] = characteristic
             peripheral.setNotifyValue(true, for: characteristic)
@@ -746,6 +750,7 @@ private enum AccessoryCharacteristic: Hashable {
     case command
     case temperatureLogs
     case brightness
+    case autoBrightnessFloor   // one-byte floor slider, not a config byte
     case deviceInfo
     case ota
     case lux
@@ -832,6 +837,7 @@ private enum BLEIdentifiers {
         command,
         temperatureLogs,
         brightness,
+        autoBrightnessFloor,
         deviceInfo,
         ota,
         lux,

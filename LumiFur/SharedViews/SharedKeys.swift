@@ -48,9 +48,9 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
     var auroraModeEnabled: Bool
     var staticColorEnabled: Bool
     var mouthBrightnessOverrideEnabled: Bool
-    var disableBleIndicatorLight: Bool = false   // byte 6, NeoPixel off
-    var disableBleStatusIcon: Bool = false       // byte 7, panel icon off
-    var waveshareBrightnessBoost: Bool = false   // byte 8, controller reboots
+    var disableBleIndicatorLight: Bool    // byte 6, NeoPixel off
+    var disableBleStatusIcon: Bool      // byte 7, panel icon off
+    var waveshareBrightnessBoost: Bool   // byte 8, controller reboots
 
     init(
         autoBrightness: Bool,
