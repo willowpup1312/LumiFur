@@ -14,10 +14,9 @@ enum AccessoryCommandEncoder {
         auroraModeEnabled: Bool,
         staticColorEnabled: Bool, //FIX: Incorrect data type
         //NEW: Implement static color to payload
-        mouthBrightnessOverrideEnabled: Bool
+        mouthBrightnessOverrideEnabled: Bool,
         disableBleIndicatorLight: Bool,   // byte 6, NeoPixel off
         disableBleStatusIcon: Bool,       // byte 7, on-panel rune off
-        waveshareBrightnessBoost: Bool    // byte 8, reboot to apply clock
     ) -> Data {
         Data([
             autoBrightness ? 1 : 0,
@@ -25,10 +24,9 @@ enum AccessoryCommandEncoder {
             sleepModeEnabled ? 1 : 0,
             auroraModeEnabled ? 1 : 0,
             staticColorEnabled ? 1: 0,
-            mouthBrightnessOverrideEnabled ? 1: 0
+            mouthBrightnessOverrideEnabled ? 1: 0,
             disableBleIndicatorLight ? 1 : 0,        // 6
             disableBleStatusIcon ? 1 : 0,            // 7
-            waveshareBrightnessBoost ? 1 : 0         // 8
         ])
     }
 
@@ -43,7 +41,6 @@ enum AccessoryCommandEncoder {
             mouthBrightnessOverrideEnabled: configuration.mouthBrightnessOverrideEnabled,
             disableBleIndicatorLight: configuration.disableBleIndicatorLight,
             disableBleStatusIcon: configuration.disableBleStatusIcon,
-            waveshareBrightnessBoost: configuration.waveshareBrightnessBoost
         )
     }
 

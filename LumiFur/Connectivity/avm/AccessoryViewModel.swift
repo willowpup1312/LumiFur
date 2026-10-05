@@ -1374,7 +1374,10 @@ final class AccessoryViewModel: ObservableObject {
             sleepModeEnabled: sleepModeEnabled,
             auroraModeEnabled: auroraModeEnabled,
             staticColorEnabled: staticColorEnabled,
-            mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled
+            mouthBrightnessOverrideEnabled: mouthBrightnessOverrideEnabled,
+            disableBleIndicatorLight: disableBleIndicatorLight,
+            disableBleStatusIcon: disableBleStatusIcon,
+            waveshareBrightnessBoost: waveshareBrightnessBoost
         )
     }
 
