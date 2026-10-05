@@ -40,6 +40,7 @@ struct SharedDataKeys {
 // MARK: - Shared Data Structures
 
 /// The configuration bytes exposed by the accessory config characteristic.
+/// The configuration bytes exposed by the accessory config characteristic.
 struct AccessoryConfiguration: Equatable, Codable, Sendable {
     var autoBrightness: Bool
     var accelerometerEnabled: Bool
@@ -47,6 +48,31 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
     var auroraModeEnabled: Bool
     var staticColorEnabled: Bool
     var mouthBrightnessOverrideEnabled: Bool
+    var disableBleIndicatorLight: Bool = false   // byte 6, NeoPixel off
+    var disableBleStatusIcon: Bool = false       // byte 7, panel icon off
+    var waveshareBrightnessBoost: Bool = false   // byte 8, controller reboots
+
+    init(
+        autoBrightness: Bool,
+        accelerometerEnabled: Bool,
+        sleepModeEnabled: Bool,
+        auroraModeEnabled: Bool,
+        staticColorEnabled: Bool,
+        mouthBrightnessOverrideEnabled: Bool,
+        disableBleIndicatorLight: Bool = false,
+        disableBleStatusIcon: Bool = false,
+        waveshareBrightnessBoost: Bool = false
+    ) {
+        self.autoBrightness = autoBrightness
+        self.accelerometerEnabled = accelerometerEnabled
+        self.sleepModeEnabled = sleepModeEnabled
+        self.auroraModeEnabled = auroraModeEnabled
+        self.staticColorEnabled = staticColorEnabled
+        self.mouthBrightnessOverrideEnabled = mouthBrightnessOverrideEnabled
+        self.disableBleIndicatorLight = disableBleIndicatorLight
+        self.disableBleStatusIcon = disableBleStatusIcon
+        self.waveshareBrightnessBoost = waveshareBrightnessBoost
+    }
 }
 
 /// Data structure for temperature readings (SHARED)
