@@ -464,6 +464,30 @@ final class AccessoryViewModel: ObservableObject {
             defaultValue: auroraModeEnabled
         )
 
+        disableBleIndicatorLight = persistedBool(
+            in: defaults, 
+            key: "disableBleIndicatorLight", 
+            defaultValue: disableBleIndicatorLight
+        )
+        disableBleStatusIcon = persistedBool(
+            in: defaults, 
+            key: "disableBleStatusIcon", 
+            defaultValue: disableBleStatusIcon
+        )
+        waveshareBrightnessBoost = persistedBool(
+            in: defaults, 
+            key: "waveshareBrightnessBoost", 
+            defaultValue: waveshareBrightnessBoost
+        )
+        matrixRainInsteadOfPlasma = persistedBool(
+            in: defaults, 
+            key: "matrixRainInsteadOfPlasma", 
+            defaultValue: matrixRainInsteadOfPlasma
+        )
+        if let floor = defaults.object(forKey: "autoBrightnessFloor") as? Int {
+            autoBrightnessFloor = UInt8(clamping: floor)
+        }
+
         if let storedMessage = defaults.object(forKey: "customMessageText") as? String {
             customMessage = storedMessage
         }
@@ -1105,6 +1129,10 @@ final class AccessoryViewModel: ObservableObject {
 
         case .brightnessUpdated(let value):
             assignIfChanged("brightness", current: &brightness, newValue: value)
+
+        case .autoBrightnessFloorUpdated(let value):
+            assignIfChanged("autoBrightnessFloor", current: &autoBrightnessFloor, newValue: value)
+            defaults.set(value, forKey: "autoBrightnessFloor")
 
         case .otaResponseUpdated(let response):
             if !response.statusMessage.isEmpty {

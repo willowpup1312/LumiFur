@@ -21,6 +21,7 @@ final class BLEClient: NSObject, @unchecked Sendable {
         case historyDownloaded([TemperatureData])
         case historyDownloadFailed(String)
         case brightnessUpdated(UInt8)
+        case autoBrightnessFloorUpdated(UInt8)
         case otaResponseUpdated(AccessoryOTAResponse)
         case luxUpdated(UInt16)
         case scrollTextUpdated(String)
@@ -387,6 +388,7 @@ final class BLEClient: NSObject, @unchecked Sendable {
 
         case BLEIdentifiers.autoBrightnessFloor:
             characteristics[.autoBrightnessFloor] = characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
             peripheral.readValue(for: characteristic)
 
         case BLEIdentifiers.ota:
@@ -692,6 +694,11 @@ extension BLEClient: CBPeripheralDelegate {
                     self.emit(.brightnessUpdated(value))
                 }
 
+            case BLEIdentifiers.autoBrightnessFloor:
+                if let value = characteristic.value?.first {
+                    self.emit(.autoBrightnessFloorUpdated(value))
+                }
+
             case BLEIdentifiers.ota:
                 if let response = AccessoryNotificationParser.otaResponse(from: data) {
                     self.emit(.otaResponseUpdated(response))
@@ -775,6 +782,7 @@ extension BLEClient.Event {
         case .historyDownloaded: return "historyDownloaded"
         case .historyDownloadFailed: return "historyDownloadFailed"
         case .brightnessUpdated: return "brightnessUpdated"
+        case .autoBrightnessFloorUpdated: return "autoBrightnessFloorUpdated"
         case .otaResponseUpdated: return "otaResponseUpdated"
         case .luxUpdated: return "luxUpdated"
         case .scrollTextUpdated: return "scrollTextUpdated"

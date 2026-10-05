@@ -72,7 +72,8 @@ struct SharedOptions {
         .emoji("Alt Face"),
         .symbol("movieclapper.fill"),
         .emoji("雨"),                    // VIEW_MATRIX_RAIN  (full panel)  → view 30
-        .symbol("eye.fill"),             // VIEW_MATRIX_FACE  (eyes only)   → view 31
+        .symbol("eye.fill"),             // VIEW_MATRIX_FACE  (face only)   → view 31
+        .emoji("😠"),                    // VIEW_ANGRY_FACE   → view 32
     ]
 
     static let strobeActionSymbol = "laser.burst"
@@ -139,6 +140,7 @@ extension SharedOptions.ProtoAction {
         case "movieclapper.fill": String(localized: "Movie")
         case "雨": String(localized: "Matrix rain")
         case "eye.fill": String(localized: "Matrix face")
+        case "😠": String(localized: "Angry face")
         default:
             isEmoji ? rawValue : String(localized: "Face effect")
         }
