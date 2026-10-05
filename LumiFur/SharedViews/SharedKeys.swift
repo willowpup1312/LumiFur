@@ -123,6 +123,11 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
             auroraModeEnabled: true,
             staticColorEnabled: true,
             mouthBrightnessOverrideEnabled: true,
+            disableBleIndicatorLight: false,   // byte 6
+            disableBleStatusIcon: false,       // byte 7
+            waveshareBrightnessBoost: false,   // byte 8
+            matrixRainInsteadOfPlasma: false,  // byte 9
+            boopMode: 3                        // byte 10
         ),
         customMessage: ""
     )

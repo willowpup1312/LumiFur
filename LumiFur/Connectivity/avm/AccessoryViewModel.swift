@@ -665,7 +665,12 @@ final class AccessoryViewModel: ObservableObject {
                 sleepModeEnabled: true,
                 auroraModeEnabled: true,
                 staticColorEnabled: false,
-                mouthBrightnessOverrideEnabled: true
+                mouthBrightnessOverrideEnabled: true,
+                disableBleIndicatorLight: false,  // byte 6
+                disableBleStatusIcon: false,      // byte 7
+                waveshareBrightnessBoost: false,  // byte 8
+                matrixRainInsteadOfPlasma: false, // byte 9
+                boopMode: 0                       // byte 10
             ),
             syncToDevice: syncToDevice
         )
@@ -759,7 +764,9 @@ final class AccessoryViewModel: ObservableObject {
         auroraModeEnabled: Bool,
         disableBleIndicatorLight: Bool,   // byte 6
         disableBleStatusIcon: Bool,       // byte 7
-        waveshareBrightnessBoost: Bool    // byte 8
+        waveshareBrightnessBoost: Bool,    // byte 8
+        matrixRainInsteadOfPlasma: Bool,
+        boopMode: UInt8
     ) -> Data {
         AccessoryCommandEncoder.accessorySettingsPayload(
             autoBrightness: autoBrightness,
@@ -771,7 +778,8 @@ final class AccessoryViewModel: ObservableObject {
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
             waveshareBrightnessBoost: waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma
+            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma,
+            boopMode: boopMode
         )
     }
 
