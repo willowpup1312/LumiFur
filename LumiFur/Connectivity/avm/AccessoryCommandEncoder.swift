@@ -12,21 +12,26 @@ enum AccessoryCommandEncoder {
         accelerometerEnabled: Bool,
         sleepModeEnabled: Bool,
         auroraModeEnabled: Bool,
-        staticColorEnabled: Bool, //FIX: Incorrect data type
-        //NEW: Implement static color to payload
+        staticColorEnabled: Bool,
         mouthBrightnessOverrideEnabled: Bool,
-        disableBleIndicatorLight: Bool,   // byte 6, NeoPixel off
-        disableBleStatusIcon: Bool,       // byte 7, on-panel rune off
+        disableBleIndicatorLight: Bool,
+        disableBleStatusIcon: Bool,
+        waveshareBrightnessBoost: Bool,
+        matrixRainInsteadOfPlasma: Bool,
+        boopMode: UInt8
     ) -> Data {
         Data([
             autoBrightness ? 1 : 0,
             accelerometerEnabled ? 1 : 0,
             sleepModeEnabled ? 1 : 0,
             auroraModeEnabled ? 1 : 0,
-            staticColorEnabled ? 1: 0,
-            mouthBrightnessOverrideEnabled ? 1: 0,
-            disableBleIndicatorLight ? 1 : 0,        // 6
-            disableBleStatusIcon ? 1 : 0,            // 7
+            staticColorEnabled ? 1 : 0,
+            mouthBrightnessOverrideEnabled ? 1 : 0,
+            disableBleIndicatorLight ? 1 : 0,
+            disableBleStatusIcon ? 1 : 0,
+            waveshareBrightnessBoost ? 1 : 0,
+            matrixRainInsteadOfPlasma ? 1 : 0,
+            boopMode
         ])
     }
 
@@ -41,6 +46,9 @@ enum AccessoryCommandEncoder {
             mouthBrightnessOverrideEnabled: configuration.mouthBrightnessOverrideEnabled,
             disableBleIndicatorLight: configuration.disableBleIndicatorLight,
             disableBleStatusIcon: configuration.disableBleStatusIcon,
+            waveshareBrightnessBoost: configuration.waveshareBrightnessBoost,
+            matrixRainInsteadOfPlasma: configuration.matrixRainInsteadOfPlasma,
+            boopMode: configuration.boopMode
         )
     }
 
