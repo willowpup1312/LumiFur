@@ -1,3 +1,11 @@
+//
+//  VideoPickerSheet.swift
+//  LumiFur
+//
+//  Created by Afton on 10/12/26.
+//
+
+
 import SwiftUI
 
 struct VideoPickerSheet: View {
