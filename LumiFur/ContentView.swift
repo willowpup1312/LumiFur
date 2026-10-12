@@ -1003,35 +1003,37 @@ private struct DashboardContentView: View {
     }
 
     private var connectedDashboard: some View {
-        GeometryReader { proxy in
-            let isLandscape = proxy.size.width > proxy.size.height
+    GeometryReader { proxy in
+        let isLandscape = proxy.size.width > proxy.size.height
 
-            Group {
-                if isLandscape {
-                    HStack(spacing: 16) {
+        Group {
+            if isLandscape {
+                HStack(spacing: 16) {
+                    VStack {                          // wrap so the button sits under the grid
                         faceGrid
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        chart(width: proxy.size.width * 0.33)
-                            .frame(maxHeight: .infinity)
+                        VideoPlayerAccessory(viewModel: bleModel)   // ADD
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isChartsExpanded)
-                } else {
-                    VStack {
-
-                            faceGrid
-
-                        chart(width: nil)
-                            .frame(maxHeight: isChartsExpanded ? 160 : 55)
-                            .padding(.horizontal)
-                            .padding(.bottom)
-                            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isChartsExpanded)
-                    }
+                    chart(width: proxy.size.width * 0.33)
+                        .frame(maxHeight: .infinity)
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
+                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isChartsExpanded)
+            } else {
+                VStack {
+                    faceGrid
+                    VideoPlayerAccessory(viewModel: bleModel)       // ADD
+                    chart(width: nil)
+                        .frame(maxHeight: isChartsExpanded ? 160 : 55)
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isChartsExpanded)
                 }
             }
         }
     }
+}
 
     private var shouldShowInlineFeedback: Bool {
         guard bleModel.hasInlineFeedback else { return false }

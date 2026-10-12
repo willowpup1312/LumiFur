@@ -48,6 +48,30 @@ enum AccessoryNotificationParser {
         matrixRainInsteadOfPlasma: data.count > 9 && data[9] == 1,
         boopMode: data.count > 10 ? data[10] : 0
     )
+
+    struct VideoList: Equatable, Sendable {
+    let currentIndex: Int
+    let names: [String]
+    }
+
+    static func videoList(from data: Data) -> VideoList? {
+        guard data.count >= 2 else { return nil }
+        let count = Int(data[0])
+        let current = Int(data[1])
+        var names: [String] = []
+        var offset = 2
+
+        while offset < data.count && names.count < count {
+            guard let end = data[offset...].firstIndex(of: 0) else { break }
+            let nameData = data[offset..<end]
+            if let name = String(data: nameData, encoding: .utf8), !name.isEmpty {
+                names.append(name)
+            }
+            offset = end + 1
+        }
+
+        return VideoList(currentIndex: current, names: names)
+    }
 }
 
     static func liveTemperatureCelsius(from data: Data) -> Double? {

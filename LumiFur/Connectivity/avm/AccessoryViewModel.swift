@@ -250,6 +250,8 @@ final class AccessoryViewModel: ObservableObject {
     @Published private(set) var targetPeripheral: CBPeripheral?
     @Published var autoReconnectEnabled = true
     @Published private(set) var isDownloadingHistory = false
+    @Published var videoList: [String] = []
+    @Published var currentVideoIndex: Int = 0
 
     // MARK: Derived state
 
@@ -916,6 +918,16 @@ final class AccessoryViewModel: ObservableObject {
         return true
     }
 
+    func refreshVideoList() {
+    client.requestVideoList()
+    }
+
+    func selectVideo(at index: Int) {
+        guard index >= 0, index < videoList.count, client.canWriteVideoList() else { return }
+        client.selectVideo(index: UInt8(index))
+        currentVideoIndex = index
+    }
+
 
     func faceButtonTapped(_ faceIndex: Int) {
         setView(faceIndex)
@@ -1130,6 +1142,10 @@ final class AccessoryViewModel: ObservableObject {
             guard selectedView != view else { return }
             selectedView = view
             scheduleExternalStateSync()
+
+        case .videoListUpdated(let list):
+            self.videoList = list.names
+            self.currentVideoIndex = list.currentIndex
 
         case .configurationUpdated(let configuration):
             apply(configuration: configuration)

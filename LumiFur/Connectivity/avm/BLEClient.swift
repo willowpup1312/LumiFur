@@ -229,6 +229,22 @@ final class BLEClient: NSObject, @unchecked Sendable {
         canWrite(to: .strobeSettings)
     }
 
+    func requestVideoList() {
+    performOnQueue { [weak self] in
+        guard let self, let peripheral = self.targetPeripheral,
+              let characteristic = self.characteristics[.videoList] else { return }
+        peripheral.readValue(for: characteristic)
+        }
+    }
+
+    func selectVideo(index: UInt8) {
+        write(Data([index]), to: .videoList, type: .withResponse)
+    }
+
+    func canWriteVideoList() -> Bool {
+        canWrite(to: .videoList)
+    }
+
     func canWriteOTA() -> Bool {
         canWrite(to: .ota)
     }
@@ -412,6 +428,11 @@ final class BLEClient: NSObject, @unchecked Sendable {
             if characteristic.properties.contains(.read) {
                 peripheral.readValue(for: characteristic)
             }
+
+        case BLEIdentifiers.videoList:
+            characteristics[.videoList] = characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
+            peripheral.readValue(for: characteristic)
 
         default:
             break
@@ -718,6 +739,11 @@ extension BLEClient: CBPeripheralDelegate {
                     self.emit(.strobeUpdated(strobe))
                 }
 
+            case BLEIdentifiers.videoList:
+                if let list = AccessoryNotificationParser.videoList(from: data) {
+                    self.emit(.videoListUpdated(list))
+                }
+
             default:
                 break
             }
@@ -763,6 +789,7 @@ private enum AccessoryCharacteristic: Hashable {
     case lux
     case scrollText
     case strobeSettings
+    case videoList
 }
 
 extension BLEClient.Event {
@@ -787,6 +814,7 @@ extension BLEClient.Event {
         case .luxUpdated: return "luxUpdated"
         case .scrollTextUpdated: return "scrollTextUpdated"
         case .strobeUpdated: return "strobeUpdated"
+        case .videoListUpdated: return "videoListUpdated"
         case .rssiUpdated: return "rssiUpdated"
         case .pairingRequired: return "pairingRequired"
         case .transportError: return "transportError"
@@ -837,6 +865,7 @@ private enum BLEIdentifiers {
     static let lux = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09f0")
     static let scrollText = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0011")
     static let strobeSettings = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0033")
+    static let videoList = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0044")
 
     static let discoverableCharacteristics: [CBUUID] = [
         view,
@@ -851,6 +880,7 @@ private enum BLEIdentifiers {
         lux,
         scrollText,
         strobeSettings,
+        videoList,
     ]
 }
 
