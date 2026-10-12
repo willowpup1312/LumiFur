@@ -26,6 +26,7 @@ final class BLEClient: NSObject, @unchecked Sendable {
         case luxUpdated(UInt16)
         case scrollTextUpdated(String)
         case strobeUpdated(StrobeState)
+        case videoListUpdated(VideoList)   // ← ADD this line
         case rssiUpdated(Int)
         case pairingRequired
         case transportError(String)

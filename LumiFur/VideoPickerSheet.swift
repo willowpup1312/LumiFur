@@ -39,7 +39,6 @@ struct VideoPlayerAccessory: View {
     @ObservedObject var viewModel: AccessoryViewModel
     @State private var showPicker = false
 
-    // movieclapper.fill is index 28 in protoActionOptions → view ID 29
     private let videoPlayerViewID = 29
 
     var body: some View {
