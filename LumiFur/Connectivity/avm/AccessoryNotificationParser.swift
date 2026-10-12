@@ -9,7 +9,10 @@ struct AccessoryOTAResponse: Equatable, Sendable {
 }
 
 // MARK: - AccessoryNotificationParser
-
+struct VideoList: Equatable, Sendable {
+    let currentIndex: Int
+    let names: [String]
+}
 /// Decodes BLE characteristic payloads into value-type domain models.
 enum AccessoryNotificationParser {
     static func deviceInfo(from data: Data) -> DeviceInfo? {
@@ -48,11 +51,6 @@ enum AccessoryNotificationParser {
         matrixRainInsteadOfPlasma: data.count > 9 && data[9] == 1,
         boopMode: data.count > 10 ? data[10] : 0
     )
-
-    struct VideoList: Equatable, Sendable {
-    let currentIndex: Int
-    let names: [String]
-    }
 
     static func videoList(from data: Data) -> VideoList? {
         guard data.count >= 2 else { return nil }
