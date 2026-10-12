@@ -2,109 +2,25 @@ import Foundation
 
 // MARK: - OTA Response
 
-/// A parsed OTA status payload emitted by the firmware.
 struct AccessoryOTAResponse: Equatable, Sendable {
     let statusMessage: String
     let resetsProgress: Bool
 }
 
-// MARK: - AccessoryNotificationParser
+// ADD VideoList at file scope (not inside the enum)
 struct VideoList: Equatable, Sendable {
     let currentIndex: Int
     let names: [String]
 }
-/// Decodes BLE characteristic payloads into value-type domain models.
+
+// MARK: - AccessoryNotificationParser
+
 enum AccessoryNotificationParser {
     static func deviceInfo(from data: Data) -> DeviceInfo? {
-        if let info = try? JSONDecoder().decode(DeviceInfo.self, from: data) {
-            return info
-        }
-
-        guard
-            let jsonString = String(data: data, encoding: .utf8),
-            let jsonData = jsonString.data(using: .utf8)
-        else {
-            return nil
-        }
-
-        return try? JSONDecoder().decode(DeviceInfo.self, from: jsonData)
+        // ... existing code ...
     }
 
-    static func selectedView(from data: Data) -> Int? {
-        data.first.map(Int.init)
-    }
-
-    static func configuration(from data: Data) -> AccessoryConfiguration? {
-    guard data.count >= 5 else { return nil }
-
-    return AccessoryConfiguration(
-        autoBrightness: data[0] == 1,
-        accelerometerEnabled: data[1] == 1,
-        sleepModeEnabled: data[2] == 1,
-        auroraModeEnabled: data[3] == 1,
-        staticColorEnabled: data[4] == 1,
-        // Old firmware may omit byte 5. Do not read past count.
-        mouthBrightnessOverrideEnabled: data.count > 5 && data[5] == 1,
-        disableBleIndicatorLight: data.count > 6 && data[6] == 1,
-        disableBleStatusIcon: data.count > 7 && data[7] == 1,
-        waveshareBrightnessBoost: data.count > 8 && data[8] == 1,
-        matrixRainInsteadOfPlasma: data.count > 9 && data[9] == 1,
-        boopMode: data.count > 10 ? data[10] : 0
-    )
-
-    static func videoList(from data: Data) -> VideoList? {
-        guard data.count >= 2 else { return nil }
-        let count = Int(data[0])
-        let current = Int(data[1])
-        var names: [String] = []
-        var offset = 2
-
-        while offset < data.count && names.count < count {
-            guard let end = data[offset...].firstIndex(of: 0) else { break }
-            let nameData = data[offset..<end]
-            if let name = String(data: nameData, encoding: .utf8), !name.isEmpty {
-                names.append(name)
-            }
-            offset = end + 1
-        }
-
-        return VideoList(currentIndex: current, names: names)
-    }
-}
-
-    static func liveTemperatureCelsius(from data: Data) -> Double? {
-        guard data.count >= MemoryLayout<Int16>.size else { return nil }
-
-        let raw: Int16 = data.withUnsafeBytes { buffer in
-            buffer.load(as: Int16.self)
-        }
-
-        return Double(Int16(littleEndian: raw)) / 10.0
-    }
-
-    static func brightness(from data: Data) -> UInt8? {
-        data.first
-    }
-
-    static func lux(from data: Data) -> UInt16? {
-        guard data.count >= 2 else { return nil }
-        return UInt16(data[0]) | (UInt16(data[1]) << 8)
-    }
-
-    static func scrollText(from data: Data) -> String {
-        let bytes = data.prefix { $0 != 0 }
-        return String(bytes: bytes, encoding: .utf8)
-            ?? String(bytes: bytes, encoding: .ascii)
-            ?? ""
-    }
-
-    static func strobeState(from data: Data) -> StrobeState? {
-        guard let settings = FWStrobeSettings.decode(from: data), let rgb = settings.rgb else {
-            return nil
-        }
-
-        return StrobeState(enabled: settings.enabled, rgb: rgb, cycleMs: settings.speedMs)
-    }
+    // ... all other existing static funcs ...
 
     static func otaResponse(from data: Data) -> AccessoryOTAResponse? {
         guard data.count == 2 else { return nil }
@@ -125,7 +41,26 @@ enum AccessoryNotificationParser {
             return AccessoryOTAResponse(statusMessage: "OTA Unknown Response", resetsProgress: false)
         }
     }
-}
+
+    static func videoList(from data: Data) -> VideoList? {
+        guard data.count >= 2 else { return nil }
+        let count = Int(data[0])
+        let current = Int(data[1])
+        var names: [String] = []
+        var offset = 2
+
+        while offset < data.count && names.count < count {
+            guard let end = data[offset...].firstIndex(of: 0) else { break }
+            let nameData = data[offset..<end]
+            if let name = String(data: nameData, encoding: .utf8), !name.isEmpty {
+                names.append(name)
+            }
+            offset = end + 1
+        }
+
+        return VideoList(currentIndex: current, names: names)
+    }
+} // ← this closes the enum
 
 // MARK: - TemperatureHistoryAssembler
 
