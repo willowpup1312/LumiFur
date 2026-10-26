@@ -921,14 +921,23 @@ private struct CharacteristicRegistry {
 
     var containsAllRequired: Bool {
         let required: [AccessoryCharacteristic] = [
-            .view,
-            .config,
-            .temperature,
-            .command,
-            .temperatureLogs,
-            .brightness,
-            .ota,
-            .strobeSettings,
+        .view,
+        .config,
+        .temperature,
+        .command,
+        .temperatureLogs,
+        .brightness,
+        .fanSpeed,
+        .staticColor,
+        .hudEnabled,
+        .oledContrast,
+        .autoBrightnessFloor,
+        .deviceInfo,
+        .ota,
+        .lux,
+        .scrollText,
+        .strobeSettings,
+        //.videoList,
         ]
 
         return required.allSatisfy { storage[$0] != nil }
