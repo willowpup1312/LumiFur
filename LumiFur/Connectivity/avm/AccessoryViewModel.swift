@@ -219,6 +219,7 @@ final class AccessoryViewModel: ObservableObject {
     @Published private(set) var temperature = "--"
     private(set) var temperatureData: [TemperatureData] = []
     @Published var brightness: UInt8 = 255
+    @Published var fanSpeed: UInt8 = 255
     @Published var luxValue: UInt16 = 0
     @Published var errorMessage = ""
     @Published var showError = false
@@ -491,6 +492,10 @@ final class AccessoryViewModel: ObservableObject {
             autoBrightnessFloor = UInt8(clamping: floor)
         }
 
+        if let storedFan = defaults.object(forKey: "fanSpeed") as? Int {
+            fanSpeed = UInt8(clamping: storedFan)
+        }
+
         if let storedBoop = defaults.object(forKey: "boopMode") as? Int {
             boopMode = UInt8(clamping: storedBoop)
         }
@@ -547,6 +552,7 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(disableBleStatusIcon, forKey: "disableBleStatusIcon")
         defaults.set(waveshareBrightnessBoost, forKey: "waveshareBrightnessBoost")
         defaults.set(autoBrightnessFloor, forKey: "autoBrightnessFloor")
+        defaults.set(fanSpeed, forKey: "fanSpeed")
         defaults.set(accelerometerEnabled, forKey: "accelerometer")
         defaults.set(sleepModeEnabled, forKey: "sleepMode")
         defaults.set(auroraModeEnabled, forKey: "auroraMode")
@@ -954,6 +960,17 @@ final class AccessoryViewModel: ObservableObject {
         client.writeBrightness(value)
     }
 
+    func setFanSpeed(_ value: UInt8) {
+    guard fanSpeed != value else { return }
+        guard client.canWriteFanSpeed() else {
+            presentError("Accessory is not ready to accept fan speed updates yet.")
+            return
+        }
+        fanSpeed = value
+        defaults.set(value, forKey: "fanSpeed")
+        client.writeFanSpeed(value)
+    }
+
     /// Writes the auto-brightness floor. Firmware treats anything below 15 as 15.
     func setAutoBrightnessFloor(_ value: UInt8) {
         autoBrightnessFloor = value
@@ -1166,6 +1183,10 @@ final class AccessoryViewModel: ObservableObject {
 
         case .brightnessUpdated(let value):
             assignIfChanged("brightness", current: &brightness, newValue: value)
+
+        case .fanSpeedUpdated(let value):
+            assignIfChanged("fanSpeed", current: &fanSpeed, newValue: value)
+            defaults.set(value, forKey: "fanSpeed")
 
         case .autoBrightnessFloorUpdated(let value):
             assignIfChanged("autoBrightnessFloor", current: &autoBrightnessFloor, newValue: value)

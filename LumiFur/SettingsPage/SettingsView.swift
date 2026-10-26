@@ -832,6 +832,21 @@ private struct BrightnessControls: View {
                 }
                 .disabled(!bleModel.isConnected)
             }
+            Slider(
+                value: Binding(
+                    get: { Double(bleModel.fanSpeed) },
+                    set: { bleModel.setFanSpeed(UInt8($0)) }
+                ),
+                in: 0...255,
+                step: 15
+            ) {
+                Text("Fan Speed")
+            } minimumValueLabel: {
+                Image(systemName: "fanblades")
+            } maximumValueLabel: {
+                Image(systemName: "fanblades.fill")
+            }
+            .disabled(!bleModel.isConnected)
         }
         // Apply animation at the container level for coordinated transitions.
         .animation(.easeInOut(duration: 0.3), value: autoBrightness)

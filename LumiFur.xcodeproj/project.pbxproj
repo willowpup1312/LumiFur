@@ -84,6 +84,7 @@
 		35F4A1022FB0000000A11001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 35F4A1002FB0000000A11001 /* PrivacyInfo.xcprivacy */; };
 		35F4A1032FB0000000A11001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 35F4A1002FB0000000A11001 /* PrivacyInfo.xcprivacy */; };
 		35F936F42DBC808D00A45B64 /* Meloriac.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 35F936F32DBC808D00A45B64 /* Meloriac.ttf */; };
+		3B4129E5307D54AF0039C5E3 /* VideoPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4129E4307D54AF0039C5E3 /* VideoPickerSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -222,6 +223,7 @@
 		35E93AB72E17F17A00E9D52F /* MatrixStylePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixStylePicker.swift; sourceTree = "<group>"; };
 		35F4A1002FB0000000A11001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		35F936F32DBC808D00A45B64 /* Meloriac.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Meloriac.ttf; sourceTree = "<group>"; };
+		3B4129E4307D54AF0039C5E3 /* VideoPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPickerSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -455,6 +457,7 @@
 		35DA3A5E2C8739FB0039D19D /* LumiFur */ = {
 			isa = PBXGroup;
 			children = (
+				3B4129E4307D54AF0039C5E3 /* VideoPickerSheet.swift */,
 				355853E62EFE4E5C001666E6 /* LEDViewModel */,
 				35D1A1062D98FE7F00AEC573 /* LumiFurRelease.entitlements */,
 				35B100032FC0000000010001 /* Localizable.xcstrings */,
@@ -859,6 +862,7 @@
 				35A53A882FAD0CC2004A562E /* OnboardingCardView.swift in Sources */,
 				358151A92E16D23B003CE8A3 /* ConnectionState.swift in Sources */,
 				35E4D4042DF88E38004EB85E /* WhatsNew.swift in Sources */,
+				3B4129E5307D54AF0039C5E3 /* VideoPickerSheet.swift in Sources */,
 				35D04CA72DB29DAA00199C5D /* SharedKeys.swift in Sources */,
 				354B00D72DD26E3A00825147 /* GlassPane.swift in Sources */,
 				355853DC2EF71D3E001666E6 /* MeshGradient.swift in Sources */,
