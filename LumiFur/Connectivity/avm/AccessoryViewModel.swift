@@ -1254,6 +1254,14 @@ final class AccessoryViewModel: ObservableObject {
         case .luxUpdated(let value):
             applyLuxValueIfNeeded(value)
 
+        case .hudEnabledUpdated(let value):
+            assignIfChanged("hudEnabled", current: &hudEnabled, newValue: value)
+            defaults.set(value, forKey: "hudEnabled")
+
+        case .oledContrastUpdated(let value):
+            assignIfChanged("oledContrast", current: &oledContrast, newValue: value)
+            defaults.set(Int(value), forKey: "oledContrast")
+
         case .scrollTextUpdated(let text):
             if assignIfChanged("customMessage", current: &customMessage, newValue: text) {
                 persistCurrentPreferences()

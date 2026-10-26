@@ -22,6 +22,8 @@ final class BLEClient: NSObject, @unchecked Sendable {
         case historyDownloadFailed(String)
         case brightnessUpdated(UInt8)
         case fanSpeedUpdated(UInt8)
+        case hudEnabledUpdated(Bool)
+        case oledContrastUpdated(UInt8)
         case staticColorUpdated(RGB8)
         case autoBrightnessFloorUpdated(UInt8)
         case otaResponseUpdated(AccessoryOTAResponse)
@@ -189,12 +191,11 @@ final class BLEClient: NSObject, @unchecked Sendable {
     }
 
     func writeHudEnabled(_ value: Bool) {
-        // write 1-byte characteristic OLED_ENABLE_CHARACTERISTIC_UUID
-        // 0 = off, 1 = on
+        write(Data([value ? 1 : 0]), to: .hudEnabled, type: .withResponse)
     }
 
     func writeOledContrast(_ value: UInt8) {
-        // write 1-byte characteristic OLED_CONTRAST_CHARACTERISTIC_UUID
+        write(Data([value]), to: .oledContrast, type: .withResponse)
     }
 
     func writeStaticColor(_ rgb: RGB8) {
@@ -437,6 +438,16 @@ final class BLEClient: NSObject, @unchecked Sendable {
 
         case BLEIdentifiers.staticColor:
             characteristics[.staticColor] = characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
+            peripheral.readValue(for: characteristic)
+
+        case BLEIdentifiers.hudEnabled:
+            characteristics[.hudEnabled] = characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
+            peripheral.readValue(for: characteristic)
+
+        case BLEIdentifiers.oledContrast:
+            characteristics[.oledContrast] = characteristic
             peripheral.setNotifyValue(true, for: characteristic)
             peripheral.readValue(for: characteristic)
 
@@ -758,6 +769,16 @@ extension BLEClient: CBPeripheralDelegate {
                     self.emit(.fanSpeedUpdated(value))
                 }
 
+            case BLEIdentifiers.hudEnabled:
+                if let value = characteristic.value?.first {
+                    self.emit(.hudEnabledUpdated(value != 0))
+                }
+
+            case BLEIdentifiers.oledContrast:
+                if let value = characteristic.value?.first {
+                    self.emit(.oledContrastUpdated(value))
+                }
+
             case BLEIdentifiers.staticColor:
                 if let data = characteristic.value, let rgb = Self.parseStaticColor(data) {
                     self.emit(.staticColorUpdated(rgb))
@@ -833,6 +854,8 @@ private enum AccessoryCharacteristic: Hashable {
     case brightness
     case fanSpeed
     case staticColor
+    case hudEnabled         
+    case oledContrast        
     case autoBrightnessFloor   // one-byte floor slider, not a config byte
     case deviceInfo
     case ota
@@ -896,6 +919,8 @@ private struct CharacteristicRegistry {
             .brightness,
             .ota,
             .strobeSettings,
+            .hudEnabled,
+            .oledContrast,
         ]
 
         return required.allSatisfy { storage[$0] != nil }
@@ -911,8 +936,11 @@ private enum BLEIdentifiers {
     static let temperatureLogs = CBUUID(string: "0195eec2-ae6e-74a1-bcd5-215e2365477c")
     static let brightness = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09ef")
     static let fanSpeed = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0055")
-        static let staticColor = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0022")
+    static let hudEnabled = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0066")
+    static let oledContrast = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0077")
+    static let staticColor = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0022")
     /// One-byte auto-brightness floor. Not part of the config characteristic.
+    static let oledContrast = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0077")
     static let autoBrightnessFloor = CBUUID(string: "BEB5483E-36E1-4688-B7F5-EA07361B26A9")
     static let deviceInfo = CBUUID(string: "cba1d466-344c-4be3-ab3f-189f80dd7599")
     static let ota = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09ee")
@@ -929,6 +957,8 @@ private enum BLEIdentifiers {
         temperatureLogs,
         brightness,
         fanSpeed,
+        hudEnabled,
+        oledContrast,
         staticColor,
         autoBrightnessFloor,
         deviceInfo,
