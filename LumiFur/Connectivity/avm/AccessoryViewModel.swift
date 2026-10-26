@@ -245,6 +245,8 @@ final class AccessoryViewModel: ObservableObject {
     @Published var overlayMode: UInt8 = 0 // config byte 9: 0 plasma, 1 matrix rain, 2 static, 3 solid
     @Published var overlaySolidColor: Color = .green
     @Published var boopMode: UInt8 = 0 // config byte 10
+    @Published var hudEnabled: Bool = true          // new
+    @Published var oledContrast: UInt8 = 1          // new (0x01 ultra-dim default)
     @Published var auroraModeEnabled = true
     @Published var customMessage = ""
     @Published var firmwareVersion = "N/A"
@@ -505,6 +507,13 @@ final class AccessoryViewModel: ObservableObject {
         if let storedBoop = defaults.object(forKey: "boopMode") as? Int {
             boopMode = UInt8(clamping: storedBoop)
         }
+        
+        if let storedHud = defaults.object(forKey: "hudEnabled") as? Bool {
+            hudEnabled = storedHud
+        }
+        if let storedContrast = defaults.object(forKey: "oledContrast") as? Int {
+            oledContrast = UInt8(clamping: storedContrast)
+        }
 
         if let storedMessage = defaults.object(forKey: "customMessageText") as? String {
             customMessage = storedMessage
@@ -565,6 +574,8 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(overlayMode, forKey: "overlayMode")
         defaults.set(overlaySolidColor.toRGB8()?.hexString ?? "00FF00", forKey: "overlaySolidColor")
         defaults.set(boopMode, forKey: "boopMode")
+        defaults.set(hudEnabled, forKey: "hudEnabled")         
+        defaults.set(oledContrast, forKey: "oledContrast")
         defaults.removeObject(forKey: "arouraMode")
         defaults.set(customMessage, forKey: "customMessageText")
         defaults.set(!customMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, forKey: "customMessageEnabled")
@@ -976,6 +987,20 @@ final class AccessoryViewModel: ObservableObject {
         fanSpeed = value
         defaults.set(value, forKey: "fanSpeed")
         client.writeFanSpeed(value)
+    }
+
+    func setHudEnabled(_ value: Bool) {
+        guard hudEnabled != value else { return }
+        hudEnabled = value
+        defaults.set(value, forKey: "hudEnabled")
+        client.writeHudEnabled(value)
+    }
+
+    func setOledContrast(_ value: UInt8) {
+        guard oledContrast != value else { return }
+        oledContrast = value
+        defaults.set(value, forKey: "oledContrast")
+        client.writeOledContrast(value)
     }
 
     /// Writes the solid-color overlay. Reuses the firmware static-color characteristic.

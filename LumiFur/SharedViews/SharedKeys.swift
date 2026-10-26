@@ -32,6 +32,8 @@ struct SharedDataKeys {
     static let sleepModeEnabled = "sleepModeEnabled"
     static let auroraModeEnabled = "auroraModeEnabled"
     static let customMessage = "sharedCustomMessage"
+    static let hudEnabled = "hudEnabled"          
+    static let oledContrast = "oledContrast"       
     static let widgetSnapshot = "widgetSnapshotData"
     static let pendingWidgetCommand = "pendingWidgetCommandData"
     static let transportPayload = "lumifurTransportPayload"

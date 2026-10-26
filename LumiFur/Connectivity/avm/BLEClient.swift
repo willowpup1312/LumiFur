@@ -188,6 +188,15 @@ final class BLEClient: NSObject, @unchecked Sendable {
         write(Data([value]), to: .fanSpeed, type: .withResponse)
     }
 
+    func writeHudEnabled(_ value: Bool) {
+        // write 1-byte characteristic OLED_ENABLE_CHARACTERISTIC_UUID
+        // 0 = off, 1 = on
+    }
+
+    func writeOledContrast(_ value: UInt8) {
+        // write 1-byte characteristic OLED_CONTRAST_CHARACTERISTIC_UUID
+    }
+
     func writeStaticColor(_ rgb: RGB8) {
         write(Data(rgb.bytes), to: .staticColor, type: .withResponse)
     }

@@ -853,6 +853,29 @@ private struct BrightnessControls: View {
                 Image(systemName: "fanblades.fill")
             }
             .disabled(!bleModel.isConnected)
+            // OLED HUD on/off
+            Toggle("Diagnostic HUD", isOn: Binding(
+                get: { bleModel.hudEnabled },
+                set: { bleModel.setHudEnabled($0) }
+            ))
+            .disabled(!bleModel.isConnected)
+
+            // OLED contrast (0–255, default ultra-dim)
+            Slider(
+                value: Binding(
+                    get: { Double(bleModel.oledContrast) },
+                    set: { bleModel.setOledContrast(UInt8($0)) }
+                ),
+                in: 0...255,
+                step: 1
+            ) {
+                Text("HUD Brightness")
+            } minimumValueLabel: {
+                Image(systemName: "circle")
+            } maximumValueLabel: {
+                Image(systemName: "circle.fill")
+            }
+            .disabled(!bleModel.isConnected || !bleModel.hudEnabled)
         }
         // Apply animation at the container level for coordinated transitions.
         .animation(.easeInOut(duration: 0.3), value: autoBrightness)
