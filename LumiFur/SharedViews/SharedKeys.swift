@@ -51,7 +51,7 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
     var disableBleIndicatorLight: Bool
     var disableBleStatusIcon: Bool
     var waveshareBrightnessBoost: Bool
-    var matrixRainInsteadOfPlasma: Bool
+    var overlayMode: UInt8
     var boopMode: UInt8
 
     init(
@@ -64,7 +64,7 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
         disableBleIndicatorLight: Bool,
         disableBleStatusIcon: Bool,
         waveshareBrightnessBoost: Bool,
-        matrixRainInsteadOfPlasma: Bool,
+        overlayMode: UInt8,
         boopMode: UInt8
     ) {
         self.autoBrightness = autoBrightness
@@ -76,7 +76,7 @@ struct AccessoryConfiguration: Equatable, Codable, Sendable {
         self.disableBleIndicatorLight = disableBleIndicatorLight
         self.disableBleStatusIcon = disableBleStatusIcon
         self.waveshareBrightnessBoost = waveshareBrightnessBoost
-        self.matrixRainInsteadOfPlasma = matrixRainInsteadOfPlasma
+        self.overlayMode = overlayMode        
         self.boopMode = boopMode
     }
 }
@@ -126,7 +126,7 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
             disableBleIndicatorLight: false,   // byte 6
             disableBleStatusIcon: false,       // byte 7
             waveshareBrightnessBoost: false,   // byte 8
-            matrixRainInsteadOfPlasma: false,  // byte 9
+            overlayMode: 0,  // byte 9: 0 plasma, 1 matrix rain, 2 static, 3 solid
             boopMode: 3                        // byte 10
         ),
         customMessage: ""

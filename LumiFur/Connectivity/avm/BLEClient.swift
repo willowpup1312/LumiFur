@@ -22,6 +22,7 @@ final class BLEClient: NSObject, @unchecked Sendable {
         case historyDownloadFailed(String)
         case brightnessUpdated(UInt8)
         case fanSpeedUpdated(UInt8)
+        case staticColorUpdated(RGB8)
         case autoBrightnessFloorUpdated(UInt8)
         case otaResponseUpdated(AccessoryOTAResponse)
         case luxUpdated(UInt16)
@@ -187,6 +188,10 @@ final class BLEClient: NSObject, @unchecked Sendable {
         write(Data([value]), to: .fanSpeed, type: .withResponse)
     }
 
+    func writeStaticColor(_ rgb: RGB8) {
+        write(Data(rgb.bytes), to: .staticColor, type: .withResponse)
+    }
+
     func writeAutoBrightnessFloor(_ value: UInt8) {
         write(Data([value]), to: .autoBrightnessFloor, type: .withResponse)
     }
@@ -229,6 +234,10 @@ final class BLEClient: NSObject, @unchecked Sendable {
 
     func canWriteFanSpeed() -> Bool {
         canWrite(to: .fanSpeed)
+    }
+
+    func canWriteStaticColor() -> Bool {
+        canWrite(to: .staticColor)
     }
 
     func canWriteScrollText() -> Bool {
@@ -414,6 +423,11 @@ final class BLEClient: NSObject, @unchecked Sendable {
 
         case BLEIdentifiers.fanSpeed:
             characteristics[.fanSpeed] = characteristic
+            peripheral.setNotifyValue(true, for: characteristic)
+            peripheral.readValue(for: characteristic)
+
+        case BLEIdentifiers.staticColor:
+            characteristics[.staticColor] = characteristic
             peripheral.setNotifyValue(true, for: characteristic)
             peripheral.readValue(for: characteristic)
 
@@ -735,6 +749,11 @@ extension BLEClient: CBPeripheralDelegate {
                     self.emit(.fanSpeedUpdated(value))
                 }
 
+            case BLEIdentifiers.staticColor:
+                if let data = characteristic.value, let rgb = Self.parseStaticColor(data) {
+                    self.emit(.staticColorUpdated(rgb))
+                }
+
             case BLEIdentifiers.autoBrightnessFloor:
                 if let value = characteristic.value?.first {
                     self.emit(.autoBrightnessFloorUpdated(value))
@@ -804,6 +823,7 @@ private enum AccessoryCharacteristic: Hashable {
     case temperatureLogs
     case brightness
     case fanSpeed
+    case staticColor
     case autoBrightnessFloor   // one-byte floor slider, not a config byte
     case deviceInfo
     case ota
@@ -831,6 +851,7 @@ extension BLEClient.Event {
         case .historyDownloadFailed: return "historyDownloadFailed"
         case .brightnessUpdated: return "brightnessUpdated"
         case .fanSpeedUpdated: return "fanSpeedUpdated"
+        case .staticColorUpdated: return "staticColorUpdated"
         case .autoBrightnessFloorUpdated: return "autoBrightnessFloorUpdated"
         case .otaResponseUpdated: return "otaResponseUpdated"
         case .luxUpdated: return "luxUpdated"
@@ -881,6 +902,7 @@ private enum BLEIdentifiers {
     static let temperatureLogs = CBUUID(string: "0195eec2-ae6e-74a1-bcd5-215e2365477c")
     static let brightness = CBUUID(string: "01931c44-3867-7427-96ab-8d7ac0ae09ef")
     static let fanSpeed = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0055")
+        static let staticColor = CBUUID(string: "7f9b8b12-1234-4c55-9b77-a19d55aa0022")
     /// One-byte auto-brightness floor. Not part of the config characteristic.
     static let autoBrightnessFloor = CBUUID(string: "BEB5483E-36E1-4688-B7F5-EA07361B26A9")
     static let deviceInfo = CBUUID(string: "cba1d466-344c-4be3-ab3f-189f80dd7599")
@@ -898,6 +920,7 @@ private enum BLEIdentifiers {
         temperatureLogs,
         brightness,
         fanSpeed,
+        staticColor,
         autoBrightnessFloor,
         deviceInfo,
         ota,
@@ -928,5 +951,18 @@ private enum BLEClientError: LocalizedError {
         case .missingCharacteristic(let name):
             return "The \(name) characteristic is not available."
         }
+    }
+}
+
+extension BLEClient {
+    /// Accepts raw 3-byte RGB or a 6-digit hex string (with optional leading #).
+    fileprivate static func parseStaticColor(_ data: Data) -> RGB8? {
+        if data.count == 3 {
+            return RGB8(r: data[0], g: data[1], b: data[2])
+        }
+        if let text = String(data: data, encoding: .utf8), let rgb = RGB8(hex: text) {
+            return rgb
+        }
+        return nil
     }
 }

@@ -72,7 +72,7 @@ struct SharedOptions {
         .emoji("Alt Face"),
         .symbol("movieclapper.fill"),
         .emoji("雨"),                    // VIEW_MATRIX_RAIN  (full panel)  → view 30
-        .symbol("eye.fill"),             // VIEW_MATRIX_FACE  (face only)   → view 31
+        .symbol("tv.fill"),              // VIEW_TV_STATIC    (full panel)  → view 31
         .emoji("😠"),                    // VIEW_ANGRY_FACE   → view 32
     ]
 
@@ -139,7 +139,7 @@ extension SharedOptions.ProtoAction {
         case "Alt Face": String(localized: "Alternative face")
         case "movieclapper.fill": String(localized: "Movie")
         case "雨": String(localized: "Matrix rain")
-        case "eye.fill": String(localized: "Matrix face")
+        case "tv.fill": String(localized: "TV static")
         case "😠": String(localized: "Angry face")
         default:
             isEmoji ? rawValue : String(localized: "Face effect")

@@ -654,18 +654,6 @@ private var waveshareBoostBinding: Binding<Bool> {
     )
 }
 
-// Config byte 9. Face masks render matrix rain instead of plasma.
- private var matrixRainInsteadOfPlasmaBinding: Binding<Bool> {
-    Binding(
-        get: { bleModel.matrixRainInsteadOfPlasma },
-        set: { newValue in
-            var configuration = bleModel.currentConfiguration()
-            configuration.matrixRainInsteadOfPlasma = newValue
-            bleModel.applyUserConfiguration(configuration)
-        }
-    )
-}
-
     private var accelerometerBinding: Binding<Bool> {
         Binding(
             get: { bleModel.accelerometerEnabled },
@@ -752,10 +740,28 @@ private var waveshareBoostBinding: Binding<Bool> {
             }
             .disabled(!bleModel.isConnected)
 
-            Toggle(isOn: matrixRainInsteadOfPlasmaBinding) {
-                Label("Matrix rain instead of plasma", systemImage: "character.textbox")
+                        Picker("Overlay", selection: Binding(
+                get: { bleModel.overlayMode },
+                set: { newValue in
+                    var configuration = bleModel.currentConfiguration()
+                    configuration.overlayMode = newValue
+                    bleModel.applyUserConfiguration(configuration)
+                }
+            )) {
+                Text("Plasma").tag(UInt8(0))
+                Text("Matrix rain").tag(UInt8(1))
+                Text("Static").tag(UInt8(2))
+                Text("Solid color").tag(UInt8(3))
             }
             .disabled(!bleModel.isConnected)
+
+            if bleModel.overlayMode == 3 {
+                ColorPicker("Solid color", selection: Binding(
+                    get: { bleModel.overlaySolidColor },
+                    set: { bleModel.setOverlaySolidColor($0) }
+                ), supportsOpacity: false)
+                .disabled(!bleModel.isConnected)
+            }
 
             Picker("Boop behavior", selection: Binding(
                 get: { bleModel.boopMode },

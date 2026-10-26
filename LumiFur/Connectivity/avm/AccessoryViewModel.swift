@@ -242,7 +242,8 @@ final class AccessoryViewModel: ObservableObject {
     @Published var autoBrightnessFloor: UInt8 = 15    // separate characteristic, not a config byte
     @Published var accelerometerEnabled = true
     @Published var sleepModeEnabled = true
-    @Published var matrixRainInsteadOfPlasma = false // config byte 9
+    @Published var overlayMode: UInt8 = 0 // config byte 9: 0 plasma, 1 matrix rain, 2 static, 3 solid
+    @Published var overlaySolidColor: Color = .green
     @Published var boopMode: UInt8 = 0 // config byte 10
     @Published var auroraModeEnabled = true
     @Published var customMessage = ""
@@ -483,11 +484,16 @@ final class AccessoryViewModel: ObservableObject {
             key: "waveshareBrightnessBoost", 
             defaultValue: waveshareBrightnessBoost
         )
-        matrixRainInsteadOfPlasma = persistedBool(
-            in: defaults, 
-            key: "matrixRainInsteadOfPlasma", 
-            defaultValue: matrixRainInsteadOfPlasma
-        )
+        if let storedOverlay = defaults.object(forKey: "overlayMode") as? Int {
+            overlayMode = UInt8(clamping: min(max(storedOverlay, 0), 3))
+        } else if defaults.object(forKey: "matrixRainInsteadOfPlasma") as? Bool == true {
+            overlayMode = 1
+        }
+        if let hex = defaults.string(forKey: "overlaySolidColor"), hex.count == 6,
+           let rgb = RGB8(hex: hex) {
+            overlaySolidColor = Color(rgb)
+        }
+
         if let floor = defaults.object(forKey: "autoBrightnessFloor") as? Int {
             autoBrightnessFloor = UInt8(clamping: floor)
         }
@@ -556,7 +562,8 @@ final class AccessoryViewModel: ObservableObject {
         defaults.set(accelerometerEnabled, forKey: "accelerometer")
         defaults.set(sleepModeEnabled, forKey: "sleepMode")
         defaults.set(auroraModeEnabled, forKey: "auroraMode")
-        defaults.set(matrixRainInsteadOfPlasma, forKey: "matrixRainInsteadOfPlasma")
+        defaults.set(overlayMode, forKey: "overlayMode")
+        defaults.set(overlaySolidColor.toRGB8()?.hexString ?? "00FF00", forKey: "overlaySolidColor")
         defaults.set(boopMode, forKey: "boopMode")
         defaults.removeObject(forKey: "arouraMode")
         defaults.set(customMessage, forKey: "customMessageText")
@@ -595,10 +602,10 @@ final class AccessoryViewModel: ObservableObject {
             newValue: configuration.waveshareBrightnessBoost
         )
 
-        let didChangeMatrixRainInsteadOfPlasma = assignIfChanged(
-            "matrixRainInsteadOfPlasma",
-            current: &matrixRainInsteadOfPlasma,
-            newValue: configuration.matrixRainInsteadOfPlasma
+        let didChangeOverlayMode = assignIfChanged(
+            "overlayMode",
+            current: &overlayMode,
+            newValue: configuration.overlayMode
         )
 
         let didChangeBoopMode = assignIfChanged(
@@ -677,7 +684,7 @@ final class AccessoryViewModel: ObservableObject {
                 disableBleIndicatorLight: false,  // byte 6
                 disableBleStatusIcon: false,      // byte 7
                 waveshareBrightnessBoost: false,  // byte 8
-                matrixRainInsteadOfPlasma: false, // byte 9
+                overlayMode: 0, // byte 9: 0 plasma, 1 matrix rain, 2 static, 3 solid
                 boopMode: 0                       // byte 10
             ),
             syncToDevice: syncToDevice
@@ -773,7 +780,7 @@ final class AccessoryViewModel: ObservableObject {
         disableBleIndicatorLight: Bool,   // byte 6
         disableBleStatusIcon: Bool,       // byte 7
         waveshareBrightnessBoost: Bool,    // byte 8
-        matrixRainInsteadOfPlasma: Bool,
+        overlayMode: UInt8,
         boopMode: UInt8
     ) -> Data {
         AccessoryCommandEncoder.accessorySettingsPayload(
@@ -786,7 +793,7 @@ final class AccessoryViewModel: ObservableObject {
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
             waveshareBrightnessBoost: waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma,
+            overlayMode: overlayMode,
             boopMode: boopMode
         )
     }
@@ -969,6 +976,18 @@ final class AccessoryViewModel: ObservableObject {
         fanSpeed = value
         defaults.set(value, forKey: "fanSpeed")
         client.writeFanSpeed(value)
+    }
+
+    /// Writes the solid-color overlay. Reuses the firmware static-color characteristic.
+    func setOverlaySolidColor(_ color: Color) {
+        guard client.canWriteStaticColor() else {
+            presentError("Accessory is not ready to accept overlay color yet.")
+            return
+        }
+        guard let rgb = color.toRGB8() else { return }
+        overlaySolidColor = Color(rgb)
+        defaults.set(rgb.hexString, forKey: "overlaySolidColor")
+        client.writeStaticColor(rgb)
     }
 
     /// Writes the auto-brightness floor. Firmware treats anything below 15 as 15.
@@ -1187,6 +1206,13 @@ final class AccessoryViewModel: ObservableObject {
         case .fanSpeedUpdated(let value):
             assignIfChanged("fanSpeed", current: &fanSpeed, newValue: value)
             defaults.set(value, forKey: "fanSpeed")
+
+        case .staticColorUpdated(let rgb):
+            let color = Color(rgb)
+            if overlaySolidColor != color {
+                overlaySolidColor = color
+                defaults.set(rgb.hexString, forKey: "overlaySolidColor")
+            }
 
         case .autoBrightnessFloorUpdated(let value):
             assignIfChanged("autoBrightnessFloor", current: &autoBrightnessFloor, newValue: value)
@@ -1479,7 +1505,7 @@ final class AccessoryViewModel: ObservableObject {
             disableBleIndicatorLight: disableBleIndicatorLight,
             disableBleStatusIcon: disableBleStatusIcon,
             waveshareBrightnessBoost: waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: matrixRainInsteadOfPlasma,
+                        overlayMode: overlayMode,
             boopMode: boopMode
         )
     }

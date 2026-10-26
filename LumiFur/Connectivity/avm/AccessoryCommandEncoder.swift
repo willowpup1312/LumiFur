@@ -17,7 +17,7 @@ enum AccessoryCommandEncoder {
         disableBleIndicatorLight: Bool,
         disableBleStatusIcon: Bool,
         waveshareBrightnessBoost: Bool,
-        matrixRainInsteadOfPlasma: Bool,
+        overlayMode: UInt8,          // byte 9: 0 plasma, 1 matrix rain, 2 static, 3 solid
         boopMode: UInt8
     ) -> Data {
         Data([
@@ -30,7 +30,7 @@ enum AccessoryCommandEncoder {
             disableBleIndicatorLight ? 1 : 0,
             disableBleStatusIcon ? 1 : 0,
             waveshareBrightnessBoost ? 1 : 0,
-            matrixRainInsteadOfPlasma ? 1 : 0,
+            min(overlayMode, 3),      // UInt8, not a Bool — do not use ? :
             boopMode
         ])
     }
@@ -47,7 +47,7 @@ enum AccessoryCommandEncoder {
             disableBleIndicatorLight: configuration.disableBleIndicatorLight,
             disableBleStatusIcon: configuration.disableBleStatusIcon,
             waveshareBrightnessBoost: configuration.waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: configuration.matrixRainInsteadOfPlasma,
+            overlayMode: configuration.overlayMode,
             boopMode: configuration.boopMode
         )
     }

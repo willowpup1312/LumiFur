@@ -52,7 +52,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDeleg
         disableBleIndicatorLight: false,
         disableBleStatusIcon: false,
         waveshareBrightnessBoost: false,
-        matrixRainInsteadOfPlasma: false,
+        overlayMode: 0,
         boopMode: 0
     )
     @Published private(set) var customMessage = ""
@@ -382,7 +382,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDeleg
             disableBleIndicatorLight: data["disableBleIndicatorLight"] as? Bool ?? configuration.disableBleIndicatorLight,
             disableBleStatusIcon: data["disableBleStatusIcon"] as? Bool ?? configuration.disableBleStatusIcon,
             waveshareBrightnessBoost: data["waveshareBrightnessBoost"] as? Bool ?? configuration.waveshareBrightnessBoost,
-            matrixRainInsteadOfPlasma: data["matrixRainInsteadOfPlasma"] as? Bool ?? configuration.matrixRainInsteadOfPlasma,
+            overlayMode: data["overlayMode"] as? UInt8 ?? (data["matrixRainInsteadOfPlasma"] as? Bool == true ? 1 : configuration.overlayMode),
             boopMode: data["boopMode"] as? UInt8 ?? configuration.boopMode
         )
 
